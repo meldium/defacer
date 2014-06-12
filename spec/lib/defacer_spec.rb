@@ -14,9 +14,15 @@ describe Defacer do
     expect(Defacer.compile function).to eq("function double(x) {return x * 2;}")
   end
 
-  let(:google_maps_example) { IO.read 'spec/fixtures/google_maps_example.js' }
+  let(:example_google_maps) { IO.read 'spec/fixtures/google_maps_example.js' }
 
   it 'should be able to handle some moderately complex js' do
-    expect { Defacer.compile google_maps_example }.to_not raise_error(Exception)
+    expect { Defacer.compile example_google_maps }.to_not raise_error(Exception)
+  end
+
+  let(:example_jquery) { IO.read 'spec/fixtures/jquery-2.1.1.js' }
+
+  it 'should be able to handle some very complex js' do
+    expect { Defacer.compile example_jquery }.to_not raise_error(Exception)
   end
 end
