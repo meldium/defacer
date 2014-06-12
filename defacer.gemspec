@@ -9,7 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Bradley Buda"]
   spec.email         = ["bradleybuda@gmail.com"]
   spec.summary       = %q{Pure-ruby JavaScript minifier}
-  spec.homepage      = ""
+  spec.description   = %q{Favors speed over size of minified JS, works on any ruby platform, works well with the Rails asset pipeline and Sprockets}
+  spec.homepage      = "https://github.com/meldium/defacer"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -20,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rkelly-remix', '0.0.6'
 
   spec.add_development_dependency 'bundler', '~> 1.5'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'guard-rspec'
+  spec.add_development_dependency 'rake', '~> 10.3'
+  spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'guard-rspec', '~> 4.2'
 end
