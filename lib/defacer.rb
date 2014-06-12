@@ -13,9 +13,13 @@ module Defacer
     end
   end
 
-  def self.compile(source)
+  def self.compress(source)
     parser = RKelly::Parser.new
     ast = parser.parse(source)
-    WhitespaceRemovingVisitor.new.accept(ast)
+    if ast # TODO test this case
+      WhitespaceRemovingVisitor.new.accept(ast)
+    else
+      ''
+    end
   end
 end
