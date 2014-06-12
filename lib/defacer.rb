@@ -1,5 +1,7 @@
 require "defacer/version"
 
 module Defacer
-  # Your code goes here...
+  def self.compile(source)
+    source
+  end
 end
