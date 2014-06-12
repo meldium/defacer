@@ -13,4 +13,10 @@ describe Defacer do
     function = "function double(x){\n  return x * 2;\n}\n"
     expect(Defacer.compile function).to eq("function double(x) {return x * 2;}")
   end
+
+  let(:google_maps_example) { IO.read 'spec/fixtures/google_maps_example.js' }
+
+  it 'should be able to handle some moderately complex js' do
+    expect { Defacer.compile google_maps_example }.to_not raise_error(Exception)
+  end
 end
