@@ -27,6 +27,10 @@ module Defacer
     def visit_ArgumentsNode(o)
       o.value.map { |x| x.accept(self) }.join(',')
     end
+
+    def visit_AddNode(o)
+      "#{o.left.accept(self)}+#{o.value.accept(self)}"
+    end
   end
 
   def self.compress(source)

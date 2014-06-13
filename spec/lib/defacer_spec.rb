@@ -13,13 +13,13 @@ describe Defacer do
     expect { Defacer.compress example_jquery }.to_not raise_error(Exception)
   end
 
-  it 'should echo back a simple expression' do
-    expression = '1 + 1;'
+  it 'should echo back an unminifiable expression' do
+    expression = '1+1;'
     expect(Defacer.compress expression).to eq(expression)
   end
 
   it 'should remove newlines' do
-    expect(Defacer.compress "1 + 1;\n2 + 2").to eq("1 + 1;2 + 2;")
+    expect(Defacer.compress "1 + 1;\n2 + 2").to eq("1+1;2+2;")
   end
 
   it 'should remove all whitespace in functions' do
@@ -43,6 +43,10 @@ describe Defacer do
     fn_call = "foo(a, 'b', 10);"
     minified = "foo(a,'b',10);"
     expect(Defacer.compress fn_call).to eq(minified)
+  end
+
+  it 'should remove spaces between binary operators' do
+    expect(Defacer.compress 'a + b;').to eq('a+b;')
   end
 
   # TODO make sure it is outputting valid JS!
