@@ -31,6 +31,11 @@ module Defacer
     def visit_AddNode(o)
       "#{o.left.accept(self)}+#{o.value.accept(self)}"
     end
+
+    def function_params_and_body(o)
+      "(#{o.arguments.map { |x| x.accept(self) }.join(',')})" +
+        "#{o.function_body.accept(self)}"
+    end
   end
 
   def self.compress(source)
