@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'closure-compiler'
 require 'defacer'
 require 'uglifier'
 require 'terminal-table'
@@ -8,9 +9,10 @@ require 'zlib'
 commands = {
   defacer: ->(js) { Defacer.compress(js) },
   uglifier: ->(js) { Uglifier.new.compress(js) },
+  closure: ->(js) { Closure::Compiler.new.compile(js) },
 }
 
-header = ['script', 'size (b)']
+header = ['script', 'original (b)'] # TODO original gz?
 commands.keys.each do |key|
   command_name = key.to_s
   header += [command_name + ' (ms)', command_name + ' (min)', command_name + ' (gz)']
@@ -40,6 +42,8 @@ inverted = []
   inverted << rows.map { |r| r[col] }
 end
 
+# Add some separators
+1.upto(commands.size).each { |i| inverted.insert((-3 * i) - i, :separator) }
 inverted.insert(1, :separator)
 
 table = Terminal::Table.new(rows: inverted)

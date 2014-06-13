@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rspec', '~> 4.2'
 
   # For benchmarking
+  spec.add_development_dependency 'closure-compiler', '~> 1.1'
   spec.add_development_dependency 'terminal-table', '~> 1.4'
   spec.add_development_dependency 'uglifier', '~> 2.5'
 end
