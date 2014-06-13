@@ -16,7 +16,7 @@ commands.keys.each do |key|
   header += [command_name + ' (ms)', command_name + ' (min)', command_name + ' (gz)']
 end
 
-rows = [header, :separator]
+rows = [header]
 
 Dir['spec/fixtures/*.js'].each do |js_file|
   input = File.read(js_file)
@@ -34,6 +34,14 @@ Dir['spec/fixtures/*.js'].each do |js_file|
   rows << row
 end
 
-table = Terminal::Table.new(rows: rows)
-1.upto(rows.first.size) { |i| table.align_column i, :right }
+# Tunrs out that it looks better if you invert the table
+inverted = []
+0.upto(rows.first.length - 1).each do |col|
+  inverted << rows.map { |r| r[col] }
+end
+
+inverted.insert(1, :separator)
+
+table = Terminal::Table.new(rows: inverted)
+1.upto(inverted.first.size) { |i| table.align_column i, :right }
 puts table
