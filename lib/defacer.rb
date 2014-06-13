@@ -1,4 +1,4 @@
-require "defacer/version"
+require 'defacer/version'
 
 require 'rkelly'
 
@@ -10,6 +10,22 @@ module Defacer
 
     def visit_FunctionBodyNode(o)
       "{#{o.value.accept(self)}}"
+    end
+
+    def visit_ObjectLiteralNode(o)
+      '{' + o.value.map { |x| x.accept(self) }.join(',') + '}'
+    end
+
+    def visit_PropertyNode(o)
+      "#{o.name}:#{o.value.accept(self)}"
+    end
+
+    def visit_AssignExprNode(o)
+      "=#{o.value.accept(self)}"
+    end
+
+    def visit_ArgumentsNode(o)
+      o.value.map { |x| x.accept(self) }.join(',')
     end
   end
 

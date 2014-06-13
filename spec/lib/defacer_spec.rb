@@ -1,5 +1,18 @@
 require 'spec_helper'
 describe Defacer do
+
+  let(:example_google_maps) { IO.read 'spec/fixtures/google_maps_example.js' }
+
+  it 'should be able to handle some moderately complex js' do
+    expect { Defacer.compress example_google_maps }.to_not raise_error(Exception)
+  end
+
+  let(:example_jquery) { IO.read 'spec/fixtures/jquery-2.1.1.js' }
+
+  it 'should be able to handle some very complex js' do
+    expect { Defacer.compress example_jquery }.to_not raise_error(Exception)
+  end
+
   it 'should echo back a simple expression' do
     expression = '1 + 1;'
     expect(Defacer.compress expression).to eq(expression)
@@ -14,15 +27,23 @@ describe Defacer do
     expect(Defacer.compress function).to eq("function double(x) {return x * 2;}")
   end
 
-  let(:example_google_maps) { IO.read 'spec/fixtures/google_maps_example.js' }
-
-  it 'should be able to handle some moderately complex js' do
-    expect { Defacer.compress example_google_maps }.to_not raise_error(Exception)
+  it 'should remove whitespace inside object literals' do
+    literal = "var mapOptions = {\n  zoom: 3,\n  center: chicago\n};"
+    minified = "var mapOptions={zoom:3,center:chicago};"
+    expect(Defacer.compress literal).to eq(minified)
   end
 
-  let(:example_jquery) { IO.read 'spec/fixtures/jquery-2.1.1.js' }
-
-  it 'should be able to handle some very complex js' do
-    expect { Defacer.compress example_jquery }.to_not raise_error(Exception)
+  it 'should remove spaces in var assignment statements' do
+    assignment = "var meaningOfLife = 42;"
+    minified = "var meaningOfLife=42;"
+    expect(Defacer.compress assignment).to eq(minified)
   end
+
+  it 'should remove spaces from function argument lists' do
+    fn_call = "foo(a, 'b', 10);"
+    minified = "foo(a,'b',10);"
+    expect(Defacer.compress fn_call).to eq(minified)
+  end
+
+  # TODO make sure it is outputting valid JS!
 end
