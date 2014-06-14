@@ -82,7 +82,18 @@ describe Defacer do
     expect(Defacer.compress js).to eq(minified)
   end
 
+  let(:hella_variable_names) { IO.read 'spec/fixtures/hella_variable_names.js' }
+
+  it 'should be able to shorten more than 26 variable names' do
+    compressed = Defacer.compress(hella_variable_names)
+    # Look for two-char names like aa, ab
+    expect(compressed).to match(/aa/)
+    expect(compressed).to match(/ab/)
+  end
+
   it 'should shorten var names in non-functional scope declarations'
+
+
 
   # TODO make sure it is outputting valid JS!
 end

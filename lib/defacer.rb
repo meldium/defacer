@@ -7,7 +7,7 @@ module Defacer
     def initialize
       super
       @bound_var_names = {}
-      @next_var_ascii_code = 'a'[0].ord
+      @next_var_index = 0
       @function_depth = 0
     end
 
@@ -21,9 +21,9 @@ module Defacer
 
     def visit_FunctionBodyNode(o)
       @function_depth += 1
-      saved_code = @next_var_ascii_code
+      saved_index = @next_var_index
       body = o.value.accept(self)
-      @next_var_ascii_code = saved_code
+      @next_var_index = saved_index
       @function_depth -= 1
       "{#{body}}"
     end
@@ -71,10 +71,7 @@ module Defacer
     # We've hit a new variable declaration, bind it to a shorter name
     def bind_var_name(o)
       if in_local_var_context
-        bound = @next_var_ascii_code.chr
-        @next_var_ascii_code += 1
-        @bound_var_names[o.name] = bound
-        bound
+        @bound_var_names[o.name] = make_next_var
       else
         o.name
       end
@@ -82,6 +79,31 @@ module Defacer
 
     def find_bound_name_for_var(o)
       @bound_var_names[o.value]
+    end
+
+    # Converts a zero-based index to a string of [a-z]. i.e.
+    # 0 => a
+    # 1 => b
+    # 26 => aa
+    # 27 => ab
+    # 52 => ba
+    # 53 => bb
+    #
+    # TODO test, simplify, and speed up this code
+    def make_next_var
+      v = ''
+      x = @next_var_index
+
+      # build up the string using the least-significant char first
+      while x >= 0
+        y = x % 26
+        v = (y + 97).chr + v
+        x -= (26 + y)
+      end
+
+      @next_var_index += 1
+
+      v
     end
 
     def in_local_var_context
