@@ -32,6 +32,18 @@ module Defacer
       "#{o.left.accept(self)}+#{o.value.accept(self)}"
     end
 
+    def visit_SubtractNode(o)
+      "#{o.left.accept(self)}-#{o.value.accept(self)}"
+    end
+
+    def visit_MultiplyNode(o)
+      "#{o.left.accept(self)}*#{o.value.accept(self)}"
+    end
+
+    def visit_DivideNode(o)
+      "#{o.left.accept(self)}/#{o.value.accept(self)}"
+    end
+
     def function_params_and_body(o)
       "(#{o.arguments.map { |x| x.accept(self) }.join(',')})" +
         "#{o.function_body.accept(self)}"

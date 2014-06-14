@@ -54,6 +54,9 @@ describe Defacer do
 
   it 'should remove spaces between binary operators' do
     expect(Defacer.compress 'a + b;').to eq('a+b;')
+    expect(Defacer.compress 'a - b;').to eq('a-b;')
+    expect(Defacer.compress 'a * b;').to eq('a*b;')
+    expect(Defacer.compress 'a / b;').to eq('a/b;')
   end
 
   # TODO make sure it is outputting valid JS!
