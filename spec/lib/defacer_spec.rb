@@ -24,7 +24,7 @@ describe Defacer do
 
   it 'should remove all whitespace in functions' do
     function = "function double(x){\n  return x * 2;\n}\n"
-    expect(Defacer.compress function).to eq("function double(x){return x * 2;}")
+    expect(Defacer.compress function).to eq("function double(x){return x*2;}")
   end
 
   it 'should remove whitespace inside object literals' do
@@ -47,16 +47,21 @@ describe Defacer do
 
   it 'should remove spaces from function decl argument lists' do
     fn_decl = "function bar(x, y) {return x - y;}"
-    minified = "function bar(x,y){return x - y;}"
+    minified = "function bar(x,y){return x-y;}"
     expect(Defacer.compress fn_decl).to eq(minified)
   end
-
 
   it 'should remove spaces between binary operators' do
     expect(Defacer.compress 'a + b;').to eq('a+b;')
     expect(Defacer.compress 'a - b;').to eq('a-b;')
     expect(Defacer.compress 'a * b;').to eq('a*b;')
     expect(Defacer.compress 'a / b;').to eq('a/b;')
+  end
+
+  it 'should remove whitespace in array literals' do
+    array = "var arr = ['1',  2, a,\n   b,'c'];"
+    minified = "var arr = ['1',2 a,b,'c'];"
+    expect(Defacer.compress array).to eq(minified)
   end
 
   # TODO make sure it is outputting valid JS!

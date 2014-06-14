@@ -16,6 +16,10 @@ module Defacer
       '{' + o.value.map { |x| x.accept(self) }.join(',') + '}'
     end
 
+    def visit_ArrayNode(o)
+      "[#{o.value.map { |x| x ? x.accept(self) : '' }.join(',')}]"
+    end
+
     def visit_PropertyNode(o)
       "#{o.name}:#{o.value.accept(self)}"
     end
