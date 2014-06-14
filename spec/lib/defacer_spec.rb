@@ -60,9 +60,29 @@ describe Defacer do
 
   it 'should remove whitespace in array literals' do
     array = "var arr = ['1',  2, a,\n   b,'c'];"
-    minified = "var arr = ['1',2 a,b,'c'];"
+    minified = "var arr=['1',2,a,b,'c'];"
     expect(Defacer.compress array).to eq(minified)
   end
+
+  it 'should rename local variables' do
+    js = 'function fooBar(){ var localA = 2; return localA + 2; }'
+    minified = 'function fooBar(){var a=2;return a+2;}'
+    expect(Defacer.compress js).to eq(minified)
+  end
+
+  it 'should rename local variables, but not global variables' do
+    js = 'var globalA = 1; function fooBar(){ var localA = 2; var localB = function(){ var localC = 3; return globalA + localA + localC + 5;}(); return localA + localB; }';
+    minified = 'var globalA=1;function fooBar(){var a=2;var b=function(){var c=3;return globalA+a+c+5;}();return a+b;}';
+    expect(Defacer.compress js).to eq(minified)
+  end
+
+  it 'should recycle bound var names in sibling functions' do
+    js = 'function foo(){ var localA = 2; return localA + 2; };function bar(){ var localB = 4; return localB + 4; }'
+    minified = 'function foo(){var a=2;return a+2;};function bar(){var a=4;return a+4;}'
+    expect(Defacer.compress js).to eq(minified)
+  end
+
+  it 'should shorten var names in non-functional scope declarations'
 
   # TODO make sure it is outputting valid JS!
 end
