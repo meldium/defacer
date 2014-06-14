@@ -68,6 +68,10 @@ module Defacer
       find_bound_name_for_var(o) || super(o)
     end
 
+    def visit_OpEqualNode(o)
+      "#{o.left.accept(self)}=#{o.value.accept(self)}"
+    end
+
     # We've hit a new variable declaration, bind it to a shorter name
     def bind_var_name(o)
       if in_local_var_context

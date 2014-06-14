@@ -39,6 +39,12 @@ describe Defacer do
     expect(Defacer.compress assignment).to eq(minified)
   end
 
+  it 'should remove spaces in reassignments' do
+    reassignment = "meaningOfLife = 42;"
+    minified = "meaningOfLife=42;"
+    expect(Defacer.compress reassignment).to eq(minified)
+  end
+
   it 'should remove spaces from function call argument lists' do
     fn_call = "foo(a, 'b', 10);"
     minified = "foo(a,'b',10);"
@@ -91,9 +97,13 @@ describe Defacer do
     expect(compressed).to match(/ab/)
   end
 
-  it 'should shorten var names in non-functional scope declarations'
-
-
+  it 'will not shorten local names even if var keyword is omitted' do
+    js = 'var x = function(){veryLongVarName = 2; var otherLongVarName = 5; return veryLongVarName + otherLongVarName;}()'
+    minified = 'var x=function(){veryLongVarName=2;var a=5;return veryLongVarName+a;}();'
+    expect(Defacer.compress js).to eq(minified)
+  end
 
   # TODO make sure it is outputting valid JS!
+
+  it 'should remove unused code' # yikes!
 end
