@@ -6,10 +6,14 @@ require 'uglifier'
 require 'terminal-table'
 require 'zlib'
 
+defacer = Defacer
+closure = Closure::Compiler.new
+uglifier = Uglifier.new
+
 commands = {
-  defacer: ->(js) { Defacer.compress(js) },
-  uglifier: ->(js) { Uglifier.new.compress(js) },
-  closure: ->(js) { Closure::Compiler.new.compile(js) },
+  defacer: ->(js) { defacer.compress(js) },
+  uglifier: ->(js) { uglifier.compress(js) },
+  closure: ->(js) { closure.compile(js) },
 }
 
 header = ['script', 'original (b)'] # TODO original gz?
