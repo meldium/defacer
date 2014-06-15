@@ -78,6 +78,18 @@ describe Defacer do
     expect(Defacer.compress assignments).to eq(minified)
   end
 
+  it 'should remove whitespace in if...else statements' do
+    if_else = 'if (2 > 1) { return x; } else { return 99; }'
+    minified = 'if(2>1){return x;}else{return 99;}'
+    expect(Defacer.compress if_else).to eq(minified)
+  end
+
+  it 'should remove whitespace in for statements' do
+    for_statement = 'for (var i = 0; i < 12; i += 1) { x = x + i; }'
+    minified = 'for(var i=0;i<12;i+=1){x=x+i;}'
+    expect(Defacer.compress for_statement).to eq(minified)
+  end
+
   it 'should rename local variables' do
     js = 'function fooBar(){ var localA = 2; return localA + 2; }'
     minified = 'function fooBar(){var a=2;return a+2;}'
@@ -133,9 +145,6 @@ describe Defacer do
     expect(ExecJS.compile(js).eval('result')).to eq(8) # precondition
     expect(ExecJS.compile(minified).eval('result')).to eq(8) # our version
   end
-
-  # TODO can you just restart variable assignment from 'a' every time you introduce a scope? take advantage of shadowing?
-
 
   # TODO still a lot of extra whitespace
 

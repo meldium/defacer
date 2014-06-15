@@ -11,7 +11,7 @@ module Defacer
     end
 
     def visit_SourceElementsNode(o)
-      o.value.map { |x| "#{indent}#{x.accept(self)}" }.join
+      o.value.map { |x| "#{x.accept(self)}" }.join
     end
 
     def visit_VarStatementNode(o)
@@ -23,6 +23,10 @@ module Defacer
     end
 
     def visit_FunctionBodyNode(o)
+      "{#{o.value.accept(self)}}"
+    end
+
+    def visit_BlockNode(o)
       "{#{o.value.accept(self)}}"
     end
 
@@ -46,20 +50,43 @@ module Defacer
       o.value.map { |x| x.accept(self) }.join(',')
     end
 
-    def visit_AddNode(o)
-      "#{o.left.accept(self)}+#{o.value.accept(self)}"
-    end
-
-    def visit_SubtractNode(o)
-      "#{o.left.accept(self)}-#{o.value.accept(self)}"
-    end
-
-    def visit_MultiplyNode(o)
-      "#{o.left.accept(self)}*#{o.value.accept(self)}"
-    end
-
-    def visit_DivideNode(o)
-      "#{o.left.accept(self)}/#{o.value.accept(self)}"
+    [
+      [:Add, '+'],
+      [:BitAnd, '&'],
+      [:BitOr, '|'],
+      [:BitXOr, '^'],
+      [:Divide, '/'],
+      [:Equal, '=='],
+      [:Greater, '>'],
+      [:GreaterOrEqual, '>='],
+      [:LeftShift, '<<'],
+      [:Less, '<'],
+      [:LessOrEqual, '<='],
+      [:LogicalAnd, '&&'],
+      [:LogicalOr, '||'],
+      [:Modulus, '%'],
+      [:Multiply, '*'],
+      [:NotEqual, '!='],
+      [:NotStrictEqual, '!=='],
+      [:OpAndEqual, '&='],
+      [:OpDivideEqual, '/='],
+      [:OpLShiftEqual, '<<='],
+      [:OpMinusEqual, '-='],
+      [:OpModEqual, '%='],
+      [:OpMultiplyEqual, '*='],
+      [:OpOrEqual, '|='],
+      [:OpPlusEqual, '+='],
+      [:OpRShiftEqual, '>>='],
+      [:OpURShiftEqual, '>>>='],
+      [:OpXOrEqual, '^='],
+      [:RightShift, '>>'],
+      [:StrictEqual, '==='],
+      [:Subtract, '-'],
+      [:UnsignedRightShift, '>>>'],
+    ].each do |name,op|
+      define_method(:"visit_#{name}Node") do |o|
+        "#{o.left.accept(self)}#{op}#{o.value.accept(self)}"
+      end
     end
 
     def visit_ResolveNode(o)
@@ -68,6 +95,19 @@ module Defacer
 
     def visit_OpEqualNode(o)
       "#{o.left.accept(self)}=#{o.value.accept(self)}"
+    end
+
+    def visit_IfNode(o)
+      "if(#{o.conditions.accept(self)})#{o.value.accept(self)}" +
+        (o.else ? "else#{o.else.accept(self)}" : '')
+    end
+
+    def visit_ForNode(o)
+      init    = o.init ? o.init.accept(self) : ';'
+      init    << ';' unless init.end_with? ';' # make sure it has a ;
+      test    = o.test ? o.test.accept(self) : ''
+      counter = o.counter ? o.counter.accept(self) : ''
+      "for(#{init}#{test};#{counter})#{o.value.accept(self)}"
     end
 
     # We've hit a new variable declaration, bind it to a shorter name
