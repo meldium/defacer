@@ -14,6 +14,10 @@ module Defacer
       o.value.map { |x| "#{indent}#{x.accept(self)}" }.join
     end
 
+    def visit_VarStatementNode(o)
+      "var #{o.value.map { |x| x.accept(self) }.join(',')};"
+    end
+
     def visit_VarDeclNode(o)
       "#{bind_var_name(o)}#{o.value ? o.value.accept(self) : nil}"
     end

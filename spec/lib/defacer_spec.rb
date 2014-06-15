@@ -70,7 +70,11 @@ describe Defacer do
     expect(Defacer.compress array).to eq(minified)
   end
 
-  it 'should remove whitespace in variable lists'
+  it 'should remove whitespace in variable lists' do
+    assignments = "var a = 42, b = 43;"
+    minified = "var a=42,b=43;"
+    expect(Defacer.compress assignments).to eq(minified)
+  end
 
   it 'should rename local variables' do
     js = 'function fooBar(){ var localA = 2; return localA + 2; }'
@@ -92,7 +96,7 @@ describe Defacer do
 
   it 'does not mix variable name bindings across sibling blocks' do
     js = 'function alpha(){ var foo = 1, bar = 2, baz = 3, quux = 4; return foo*bar*baz*quux; };function beta(){ var baz = 4, quux = 9; return quux - baz; }'
-    minified = 'function alpha(){var a=1, b=2, c=3, d=4;return a*b*c*d;};function beta(){var a=4, b=9;return b-a;}'
+    minified = 'function alpha(){var a=1,b=2,c=3,d=4;return a*b*c*d;};function beta(){var a=4,b=9;return b-a;}'
     expect(Defacer.compress js).to eq(minified)
   end
 
