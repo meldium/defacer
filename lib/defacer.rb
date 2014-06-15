@@ -7,7 +7,6 @@ module Defacer
     def initialize
       super
       @bound_var_names = {}
-      @next_var_index = 0 # TODO do we need this? can we just use @bound_var_names.size?
       @function_depth = 0
     end
 
@@ -24,13 +23,11 @@ module Defacer
       @function_depth += 1
 
       # Save the current binding
-      saved_index = @next_var_index
       saved_bound_var_names = @bound_var_names.dup
 
       body = o.value.accept(self)
 
       # Restore the binding
-      @next_var_index = saved_index
       @bound_var_names = saved_bound_var_names
 
       # Restore the depth
@@ -107,7 +104,7 @@ module Defacer
     # TODO test, simplify, and speed up this code
     def make_next_var
       v = ''
-      x = @next_var_index
+      x = @bound_var_names.size
 
       # build up the string using the least-significant char first
       while x >= 0
@@ -115,8 +112,6 @@ module Defacer
         v = (y + 97).chr + v
         x -= (26 + y)
       end
-
-      @next_var_index += 1
 
       v
     end
