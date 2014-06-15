@@ -1,4 +1,6 @@
+require 'execjs'
 require 'spec_helper'
+
 describe Defacer do
 
   let(:example_google_maps) { IO.read 'spec/fixtures/google_maps_example.js' }
@@ -126,7 +128,10 @@ describe Defacer do
     js = "var result = function(){var foo = 2, bar = 3; return function(bar){return bar + 1;}(foo) + foo + bar;}();"
     minified = "var result=function(){var a=2,b=3;return function(c){return c+1;}(a)+a+b;}();"
     expect(Defacer.compress js).to eq(minified)
-    # TODO actually run the minified JS!
+
+    # Actually run the JS to make sure the transformation is safe
+    expect(ExecJS.compile(js).eval('result')).to eq(8) # precondition
+    expect(ExecJS.compile(minified).eval('result')).to eq(8) # our version
   end
 
   # TODO can you just restart variable assignment from 'a' every time you introduce a scope? take advantage of shadowing?
