@@ -19,25 +19,11 @@ module Defacer
     end
 
     def visit_VarDeclNode(o)
-      "#{bind_var_name(o)}#{o.value ? o.value.accept(self) : nil}"
+      "#{bind_var_name(o.name)}#{o.value ? o.value.accept(self) : nil}"
     end
 
     def visit_FunctionBodyNode(o)
-      # Track depth to determine if we are at global scope
-      @function_depth += 1
-
-      # Save the current binding
-      saved_bound_var_names = @bound_var_names.dup
-
-      body = o.value.accept(self)
-
-      # Restore the binding
-      @bound_var_names = saved_bound_var_names
-
-      # Restore the depth
-      @function_depth -= 1
-
-      "{#{body}}"
+      "{#{o.value.accept(self)}}"
     end
 
     def visit_ObjectLiteralNode(o)
@@ -87,9 +73,9 @@ module Defacer
     # We've hit a new variable declaration, bind it to a shorter name
     def bind_var_name(o)
       if in_local_var_context
-        @bound_var_names[o.name] = make_next_var
+        @bound_var_names[o] = make_next_var
       else
-        o.name
+        o
       end
     end
 
@@ -125,8 +111,21 @@ module Defacer
     end
 
     def function_params_and_body(o)
-      "(#{o.arguments.map { |x| x.accept(self) }.join(',')})" +
+      # Track depth to determine if we are at global scope
+      @function_depth += 1
+
+      # Save the current binding
+      saved_bound_var_names = @bound_var_names.dup
+
+      "(#{o.arguments.map { |x| bind_var_name(x.value) }.join(',')})" +
         "#{o.function_body.accept(self)}"
+
+    ensure
+      # Restore the binding
+      @bound_var_names = saved_bound_var_names
+
+      # Restore the depth
+      @function_depth -= 1
     end
   end
 

@@ -24,7 +24,7 @@ describe Defacer do
 
   it 'should remove all whitespace in functions' do
     function = "function double(x){\n  return x * 2;\n}\n"
-    expect(Defacer.compress function).to eq("function double(x){return x*2;}")
+    expect(Defacer.compress function).to eq("function double(a){return a*2;}")
   end
 
   it 'should remove whitespace inside object literals' do
@@ -53,7 +53,7 @@ describe Defacer do
 
   it 'should remove spaces from function decl argument lists' do
     fn_decl = "function bar(x, y) {return x - y;}"
-    minified = "function bar(x,y){return x-y;}"
+    minified = "function bar(a,b){return a-b;}"
     expect(Defacer.compress fn_decl).to eq(minified)
   end
 
@@ -115,7 +115,22 @@ describe Defacer do
     expect(Defacer.compress js).to eq(minified)
   end
 
-  # TODO not outputting valid JS!
+  it 'should correctly shorten shadowed names' do
+    js = "var result = function(){var foo = 2, bar = 3; return function(){var bar = 9; return bar + 1;}() + foo + bar;}();"
+    minified = "var result=function(){var a=2,b=3;return function(){var c=9;return c+1;}()+a+b;}();"
+    expect(Defacer.compress js).to eq(minified)
+    # TODO actually run the minified JS!
+  end
+
+  it 'should correctly shorted shadowed names in function parameters' do
+    js = "var result = function(){var foo = 2, bar = 3; return function(bar){return bar + 1;}(foo) + foo + bar;}();"
+    minified = "var result=function(){var a=2,b=3;return function(c){return c+1;}(a)+a+b;}();"
+    expect(Defacer.compress js).to eq(minified)
+    # TODO actually run the minified JS!
+  end
+
+  # TODO can you just restart variable assignment from 'a' every time you introduce a scope? take advantage of shadowing?
+
 
   # TODO still a lot of extra whitespace
 
