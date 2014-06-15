@@ -70,6 +70,8 @@ describe Defacer do
     expect(Defacer.compress array).to eq(minified)
   end
 
+  it 'should remove whitespace in variable lists'
+
   it 'should rename local variables' do
     js = 'function fooBar(){ var localA = 2; return localA + 2; }'
     minified = 'function fooBar(){var a=2;return a+2;}'
@@ -88,6 +90,12 @@ describe Defacer do
     expect(Defacer.compress js).to eq(minified)
   end
 
+  it 'does not mix variable name bindings across sibling blocks' do
+    js = 'function alpha(){ var foo = 1, bar = 2, baz = 3, quux = 4; return foo*bar*baz*quux; };function beta(){ var baz = 4, quux = 9; return quux - baz; }'
+    minified = 'function alpha(){var a=1, b=2, c=3, d=4;return a*b*c*d;};function beta(){var a=4, b=9;return b-a;}'
+    expect(Defacer.compress js).to eq(minified)
+  end
+
   let(:hella_variable_names) { IO.read 'spec/fixtures/hella_variable_names.js' }
 
   it 'should be able to shorten more than 26 variable names' do
@@ -103,7 +111,9 @@ describe Defacer do
     expect(Defacer.compress js).to eq(minified)
   end
 
-  # TODO make sure it is outputting valid JS!
+  # TODO not outputting valid JS!
+
+  # TODO still a lot of extra whitespace
 
   it 'should remove unused code' # yikes!
 end

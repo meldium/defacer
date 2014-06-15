@@ -7,7 +7,7 @@ module Defacer
     def initialize
       super
       @bound_var_names = {}
-      @next_var_index = 0
+      @next_var_index = 0 # TODO do we need this? can we just use @bound_var_names.size?
       @function_depth = 0
     end
 
@@ -20,11 +20,22 @@ module Defacer
     end
 
     def visit_FunctionBodyNode(o)
+      # Track depth to determine if we are at global scope
       @function_depth += 1
+
+      # Save the current binding
       saved_index = @next_var_index
+      saved_bound_var_names = @bound_var_names.dup
+
       body = o.value.accept(self)
+
+      # Restore the binding
       @next_var_index = saved_index
+      @bound_var_names = saved_bound_var_names
+
+      # Restore the depth
       @function_depth -= 1
+
       "{#{body}}"
     end
 
