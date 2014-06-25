@@ -146,6 +146,15 @@ describe Defacer do
     expect(ExecJS.compile(minified).eval('result')).to eq(8) # our version
   end
 
+  let(:example_underscore) { IO.read 'spec/fixtures/underscore.js' }
+
+  it 'should correctly minify underscore', focus: true do
+    minified = Defacer.compress(example_underscore)
+    compiled = ExecJS.compile(minified)
+    result = compiled.eval('_.max([1, 42, 3, 9, 0])')
+    expect(result).to eq(42)
+  end
+
   # TODO still a lot of extra whitespace
 
   it 'should remove unused code' # yikes!

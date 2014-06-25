@@ -97,10 +97,10 @@ module Defacer
       "#{o.left.accept(self)}=#{o.value.accept(self)}"
     end
 
-    def visit_IfNode(o)
-      "if(#{o.conditions.accept(self)})#{o.value.accept(self)}" +
-        (o.else ? "else#{o.else.accept(self)}" : '')
-    end
+#    def visit_IfNode(o)
+#      "if(#{o.conditions.accept(self)})#{o.value.accept(self)}" +
+#        (o.else ? "else#{o.else.accept(self)}" : '')
+#    end
 
     def visit_ForNode(o)
       init    = o.init ? o.init.accept(self) : ';'
