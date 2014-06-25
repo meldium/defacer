@@ -1,3 +1,4 @@
+require 'defacer/namer'
 require 'defacer/version'
 
 require 'rkelly'
@@ -123,27 +124,11 @@ module Defacer
       @bound_var_names[o.value]
     end
 
-    # Converts a zero-based index to a string of [a-z]. i.e.
-    # 0 => a
-    # 1 => b
-    # 26 => aa
-    # 27 => ab
-    # 52 => ba
-    # 53 => bb
-    #
-    # TODO test, simplify, and speed up this code
     def make_next_var
-      v = ''
-      x = @bound_var_names.size
+      Defacer::Namer.name_var_at_index(@bound_var_names.size)
+    end
 
-      # build up the string using the least-significant char first
-      while x >= 0
-        y = x % 26
-        v = (y + 97).chr + v
-        x -= (26 + y)
-      end
-
-      v
+    def make_var_at_index(x)
     end
 
     def in_local_var_context

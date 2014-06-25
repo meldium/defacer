@@ -155,6 +155,10 @@ describe Defacer do
     expect(result).to eq(42)
   end
 
+  # TODO improve angular, worst minification of examples
+  # TODO rename functions declared like function fooBar(){} if they are not at global scope
+
+
   # TODO still a lot of extra whitespace
 
   it 'should remove unused code' # yikes!
