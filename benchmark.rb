@@ -24,7 +24,7 @@ end
 
 rows = [header]
 
-Dir['spec/fixtures/*.js'].each do |js_file|
+Dir['spec/fixtures/benchmarks/*.js'].each do |js_file|
   input = File.read(js_file)
 
   row = [js_file.split('/').last, input.size]

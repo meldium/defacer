@@ -9,7 +9,7 @@ describe Defacer do
     expect { Defacer.compress example_google_maps }.to_not raise_error(Exception)
   end
 
-  let(:example_jquery) { IO.read 'spec/fixtures/jquery-2.1.1.js' }
+  let(:example_jquery) { IO.read 'spec/fixtures/benchmarks/jquery-2.1.1.js' }
 
   it 'should be able to handle some very complex js' do
     expect { Defacer.compress example_jquery }.to_not raise_error(Exception)
@@ -146,7 +146,7 @@ describe Defacer do
     expect(ExecJS.compile(minified).eval('result')).to eq(8) # our version
   end
 
-  let(:example_underscore) { IO.read 'spec/fixtures/underscore.js' }
+  let(:example_underscore) { IO.read 'spec/fixtures/benchmarks/underscore.js' }
 
   it 'should correctly minify underscore', focus: true do
     minified = Defacer.compress(example_underscore)
