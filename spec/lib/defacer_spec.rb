@@ -133,7 +133,10 @@ describe Defacer do
     js = "var result = function(){var foo = 2, bar = 3; return function(){var bar = 9; return bar + 1;}() + foo + bar;}();"
     minified = "var result=function(){var a=2,b=3;return function(){var c=9;return c+1;}()+a+b;}();"
     expect(Defacer.compress js).to eq(minified)
-    # TODO actually run the minified JS!
+
+    # Actually run the JS to make sure the transformation is safe
+    expect(ExecJS.compile(js).eval('result')).to eq(15) # precondition
+    expect(ExecJS.compile(minified).eval('result')).to eq(15) # our version
   end
 
   it 'should correctly shorted shadowed names in function parameters' do
