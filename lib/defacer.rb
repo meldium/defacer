@@ -99,8 +99,15 @@ module Defacer
     end
 
     def visit_IfNode(o)
-      "if(#{o.conditions.accept(self)})#{o.value.accept(self)}" +
-        (o.else ? "else #{o.else.accept(self)}" : '')
+      statement = "if(#{o.conditions.accept(self)})#{o.value.accept(self)}"
+      if else_statement = o.else
+        if else_statement.kind_of? RKelly::Nodes::BlockNode
+          statement += "else#{o.else.accept(self)}"
+        else
+          statement += "else #{o.else.accept(self)}"
+        end
+      end
+      statement
     end
 
     def visit_ForNode(o)

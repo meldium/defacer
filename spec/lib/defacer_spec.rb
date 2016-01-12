@@ -80,8 +80,20 @@ describe Defacer do
 
   it 'should remove whitespace in if...else statements' do
     if_else = 'if (2 > 1) { return x; } else { return 99; }'
-    minified = 'if(2>1){return x;}else {return 99;}'
+    minified = 'if(2>1){return x;}else{return 99;}'
     expect(Defacer.compress if_else).to eq(minified)
+  end
+
+  it 'should remove whitespace in if..else if..else statements' do
+    statement = 'if (2 > 1) { return x; } else if (3 > 2) { return 2; } else { return 99; }'
+    minified = 'if(2>1){return x;}else if(3>2){return 2;}else{return 99;}'
+    expect(Defacer.compress statement).to eq(minified)
+  end
+
+  it 'should correctly remove whitespace in non-block if..else statements' do
+    statement = 'if (2 > 1) return x; else return y;'
+    minified = 'if(2>1)return x;else return y;'
+    expect(Defacer.compress statement).to eq(minified)
   end
 
   it 'should remove whitespace in for statements' do
