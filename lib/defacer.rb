@@ -90,6 +90,24 @@ module Defacer
       end
     end
 
+    def visit_SwitchNode(o)
+      "switch(#{o.left.accept(self)})#{o.value.accept(self)}"
+    end
+
+    def visit_CaseBlockNode(o)
+      "{" + (o.value ? o.value.map { |x| x.accept(self) }.join('') : '') + "}"
+    end
+
+    def visit_CaseClauseNode(o)
+      if o.left
+        case_code = "case #{o.left.accept(self)}:"
+      else
+        case_code = "default:"
+      end
+      case_code += "#{o.value.accept(self)}"
+      case_code
+    end
+
     def visit_ResolveNode(o)
       find_bound_name_for_var(o) || super(o)
     end

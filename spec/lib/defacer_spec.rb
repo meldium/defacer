@@ -24,6 +24,12 @@ describe Defacer do
     expect(Defacer.compress "1 + 1;\n2 + 2").to eq("1+1;2+2;")
   end
 
+  it 'should remove comments' do
+    commented = "/*\n My cool library\n Copyright 2016, Me\n*/\nx = 1;"
+    minified = "x=1;"
+    expect(Defacer.compress commented).to eq(minified)
+  end
+
   it 'should remove all whitespace in functions' do
     function = "function double(x){\n  return x * 2;\n}\n"
     expect(Defacer.compress function).to eq("function double(a){return a*2;}")
@@ -100,6 +106,25 @@ describe Defacer do
     for_statement = 'for (var i = 0; i < 12; i += 1) { x = x + i; }'
     minified = 'for(var i=0;i<12;i+=1){x=x+i;}'
     expect(Defacer.compress for_statement).to eq(minified)
+  end
+
+  it 'should remove whitepsace in switch...case statements' do
+    js = <<-SWITCH
+      function isLeafNode (node) {
+        if (node) {
+          switch (node.nodeName) {
+            case "OPTION":
+            case "PRE":
+            case "TITLE":
+              return true;
+          }
+        }
+        return false;
+        }
+    SWITCH
+
+    minified = 'function isLeafNode(a){if(a){switch(a.nodeName){case "OPTION":case "PRE":case "TITLE":return true;}}return false;}'
+    expect(Defacer.compress js).to eq(minified)
   end
 
   it 'should rename local variables' do
