@@ -36,7 +36,9 @@ Dir['spec/fixtures/benchmarks/*.js'].each do |js_file|
     gzipped = Zlib::Deflate.deflate(minified)
     row += [(elapsed * 1000).to_i, minified.size, gzipped.size]
 
-    File.open("tmp/defaced-#{js_file.split('/').last}", "w") { |f| f.write(minified) }
+    if command_name == :defacer
+      File.open("tmp/defaced-#{js_file.split('/').last}", "w") { |f| f.write(minified) }
+    end
   end
 
   rows << row
