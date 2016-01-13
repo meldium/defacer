@@ -163,7 +163,7 @@ describe Defacer do
 
   let(:example_underscore) { IO.read 'spec/fixtures/benchmarks/underscore.js' }
 
-  it 'should correctly minify underscore', focus: true do
+  it 'should correctly minify underscore' do
     minified = Defacer.compress(example_underscore)
     compiled = ExecJS.compile(minified)
     result = compiled.eval('_.max([1, 42, 3, 9, 0])')
