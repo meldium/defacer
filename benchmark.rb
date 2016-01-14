@@ -8,52 +8,45 @@ require 'zlib'
 
 defacer = Defacer
 closure = Closure::Compiler.new
-uglifier = Uglifier.new
 
-commands = {
-  defacer: ->(js) { defacer.compress(js) },
-  uglifier: ->(js) { uglifier.compress(js) },
-  closure: ->(js) { closure.compile(js) },
-}
+rows = [[
+          'script',
+          'size: unminified + gz',
+          'size: closure + gz',
+          'size: defacer + gz',
+          'speed: closure + gz',
+          'speed: defacer + gz',
+        ]]
 
-header = ['script', 'original (b)'] # TODO original gz?
-commands.keys.each do |key|
-  command_name = key.to_s
-  header += [command_name + ' (ms)', command_name + ' (min)', command_name + ' (gz)']
-end
+rows << :separator
 
-rows = [header]
+callables = [
+  ->(js) { defacer.compress(js) },
+  ->(js) { closure.compile(js) },
+]
 
 Dir['spec/fixtures/benchmarks/*.js'].each do |js_file|
   input = File.read(js_file)
+  basename = js_file.split('/').last
 
-  row = [js_file.split('/').last, input.size]
+  row = []
+  row << basename
+  row << Zlib::Deflate.deflate(input).size
 
-  commands.each do |command_name, command|
-    start_time = Time.now.to_f
-    minified = command.call(input)
-    elapsed = Time.now.to_f - start_time
-    gzipped = Zlib::Deflate.deflate(minified)
-    row += [(elapsed * 1000).to_i, minified.size, gzipped.size]
+  closure_start_time = Time.now.to_f
+  closure_minified = closure.compile(input)
+  closure_gzipped = Zlib::Deflate.deflate(closure_minified)
+  closure_elapsed = ((Time.now.to_f - closure_start_time) * 1000).to_i
 
-    if command_name == :defacer
-      File.open("tmp/defaced-#{js_file.split('/').last}", "w") { |f| f.write(minified) }
-    end
-  end
+  defacer_start_time = Time.now.to_f
+  defacer_minified = defacer.compress(input)
+  defacer_gzipped = Zlib::Deflate.deflate(defacer_minified)
+  defacer_elapsed = ((Time.now.to_f - defacer_start_time) * 1000).to_i
+
+  row += [closure_gzipped.size, defacer_gzipped.size, closure_elapsed, defacer_elapsed]
 
   rows << row
 end
 
-# Tunrs out that it looks better if you invert the table
-inverted = []
-0.upto(rows.first.length - 1).each do |col|
-  inverted << rows.map { |r| r[col] }
-end
-
-# Add some separators
-1.upto(commands.size).each { |i| inverted.insert((-3 * i) - i, :separator) }
-inverted.insert(1, :separator)
-
-table = Terminal::Table.new(rows: inverted)
-1.upto(inverted.first.size) { |i| table.align_column i, :right }
+table = Terminal::Table.new(rows: rows)
 puts table
