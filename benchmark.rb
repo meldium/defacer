@@ -13,6 +13,19 @@ def percent_difference(baseline, measured, labels)
   "#{rounded}% #{label}"
 end
 
+puts <<-MANIFESTO
+
+Defacer's goal is to be faster than any other javascript minification
+gem while producing output that is no more than 5% larger than any
+other gem, after gzipping the output of each.
+
+This script tests Defacer against the Closure compiler gem using
+several popular javascript libraries to determine whether or not we
+are meeting that goal. The benchmarks are running now and will take a
+few seconds.
+
+MANIFESTO
+
 defacer = Defacer
 closure = Closure::Compiler.new
 
@@ -53,6 +66,8 @@ Dir['spec/fixtures/benchmarks/*.js'].each do |js_file|
           defacer_elapsed,
           percent_difference(closure_elapsed, defacer_elapsed, %w(faster slower)),
          ]
+
+  # TODO show if we hit our goals or not
 
   rows << row
 
