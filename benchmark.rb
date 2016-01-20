@@ -26,11 +26,17 @@ def percent_difference(baseline, measured, labels)
   "#{rounded}% #{label}"
 end
 
-def benchmark_minifier(input, &block)
+def benchmark_minifier(name, js_file, &block)
+  basename = js_file.split('/').last
+  input = File.read(js_file)
+
   start_time = Time.now.to_f
   minified = block.call(input)
   gzipped_size = Zlib::Deflate.deflate(minified).size
   elapsed = ((Time.now.to_f - start_time) * 1000).to_i
+
+  File.open("benchmark-outputs/#{name}-#{basename}", 'w') { |f| f.write(minified) }
+
   return gzipped_size, elapsed
 end
 
@@ -51,14 +57,13 @@ rows << :separator
 
 
 Dir['spec/fixtures/benchmarks/*.js'].each do |js_file|
-  input = File.read(js_file)
   basename = js_file.split('/').last
 
   row = []
   row << basename
 
-  closure_gzipped_size, closure_elapsed = benchmark_minifier(input) { |i| closure.compile(i) }
-  defacer_gzipped_size, defacer_elapsed = benchmark_minifier(input) { |i| defacer.compress(i) }
+  closure_gzipped_size, closure_elapsed = benchmark_minifier('closure', js_file) { |i| closure.compile(i) }
+  defacer_gzipped_size, defacer_elapsed = benchmark_minifier('defacer', js_file) { |i| defacer.compress(i) }
 
   row += [
     closure_gzipped_size,
@@ -72,8 +77,6 @@ Dir['spec/fixtures/benchmarks/*.js'].each do |js_file|
   # TODO show if we hit our goals or not
 
   rows << row
-
-  # TODO write out scripts for later analysis
 end
 
 table = Terminal::Table.new(rows: rows)
